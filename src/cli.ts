@@ -35,9 +35,9 @@ yargs(hideBin(process.argv))
         lines.push(line);
       });
 
-      rl.on("close", () => {
+      rl.on("close", async () => {
         for (let line of lines) {
-          generateReport(line);
+          await generateReport(line);
         }
       });
     }

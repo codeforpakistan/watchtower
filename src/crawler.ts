@@ -2,17 +2,26 @@ import fs from "fs";
 import lighthouse, { type Flags } from "lighthouse";
 import * as chromeLauncher from "chrome-launcher";
 
-export async function generateReport(url: string) {
+const DEFAULT_OPTIONS: Flags = {
+  logLevel: "info",
+  output: "html",
+  onlyCategories: ["performance"],
+};
+
+/**
+ * Generates a Lighthouse report with configurable options.
+ * @param {string} url - The url to generate the report against.
+ * @param {Flags} options - The options to configure Lighthouse with.
+ */
+export async function generateReport(url: string, options: Flags = DEFAULT_OPTIONS) {
   const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
 
-  const options: Flags = {
-    logLevel: "info",
-    output: "html",
-    onlyCategories: ["performance"],
+  const opts: Flags = {
+    ...options,
     port: chrome.port,
   };
 
-  const runnerResult = await lighthouse(url, options);
+  const runnerResult = await lighthouse(url, opts);
 
   if (!runnerResult) {
     throw new Error("No report generated");
@@ -24,8 +33,8 @@ export async function generateReport(url: string) {
     fs.mkdirSync("reports");
   }
 
-  const urlParts = url.split("/");
-  const websiteName = urlParts[urlParts.length - 1];
+  // Note that this creates a unique directory for each domain and subdomain, but not the same pages.
+  const websiteName = new URL(url).hostname;
   if (!fs.existsSync(`reports/${websiteName}`)) {
     fs.mkdirSync(`reports/${websiteName}`);
   }
