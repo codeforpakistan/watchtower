@@ -3,7 +3,7 @@ import lighthouse, { type Flags } from "lighthouse";
 import * as chromeLauncher from "chrome-launcher";
 
 const DEFAULT_OPTIONS: Flags = {
-  logLevel: "info",
+  logLevel: "verbose",
   output: "html",
   onlyCategories: ["performance"],
 };
