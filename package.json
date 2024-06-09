@@ -14,8 +14,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "yargs": "^17.7.2",
     "@google-cloud/local-auth": "^3.0.1",
-    "@googleapis/sheets": "^6.0.0"
+    "@googleapis/sheets": "^6.0.0",
+    "dotenv": "^16.4.5",
+    "yargs": "^17.7.2"
   }
 }

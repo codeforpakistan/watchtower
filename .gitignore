@@ -2,6 +2,7 @@
 
 # Reports and credentials.
 reports
+urls.txt
 oauth2.keys.json
 
 # Logs
