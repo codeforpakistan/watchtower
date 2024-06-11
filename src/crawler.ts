@@ -1,57 +1,35 @@
-import fs from "fs";
-import lighthouse, { type Flags } from "lighthouse";
-import * as chromeLauncher from "chrome-launcher";
-
-const DEFAULT_OPTIONS: Flags = {
-  logLevel: "info",
-  output: "html",
-  onlyCategories: ["performance"],
-};
+import "dotenv/config";
 
 /**
- * Generates a Lighthouse report with configurable options.
- * @param {string} url - The url to generate the report against.
- * @param {Flags} options - The options to configure Lighthouse with.
+ * Create a query url for the PageSpeeds Insights API.
+ * @param url The url to query the api for.
+ * @returns A query url that can be fetched to get the results. 
  */
-export async function generateReport(url: string, options: Flags = DEFAULT_OPTIONS) {
-  const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
-
-  const opts: Flags = {
-    ...options,
-    port: chrome.port,
+function createQuery(url: string): string {
+  let api = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed";
+  let options: any = {
+    url: encodeURIComponent(url),
+    key: process.env.API_KEY
   };
 
-  const runnerResult = await lighthouse(url, opts);
-
-  if (!runnerResult) {
-    throw new Error("No report generated");
-  }
-
-  const reportHtml = runnerResult.report;
-
-  if (!fs.existsSync("reports")) {
-    fs.mkdirSync("reports");
-  }
-
-  // Note that this creates a unique directory for each domain and subdomain, but not the same pages.
-  const websiteName = new URL(url).hostname;
-  if (!fs.existsSync(`reports/${websiteName}`)) {
-    fs.mkdirSync(`reports/${websiteName}`);
-  }
+  return `${api}?url=${options.url}&key=${options.key}`;
+}
 
 
-  fs.writeFileSync(`reports/${websiteName}/report.html`, reportHtml.toString());
+/**
+ * Generates a Lighthouse report using PageSpeed Insights API.
+ * @param {string} url - The url to generate the report against.
+ */
+export async function generateReport(url: string): Promise<number> {
+  console.log(`Generating report for ${url}.`);
+  await fetch(createQuery(url))
+    .then(response => response.json())
+    .then((json: any) => {
+      let score: number = json.lighthouseResult.categories.performance.score;
+      console.log(`Performance score for ${url} is`, Math.round(score * 100));
+      return score;
+    })
+    .catch(err => { console.error(`No report generated for ${url}.`) });
 
-  console.log("Report is done for", runnerResult.lhr.finalDisplayedUrl);
-
-  if (!runnerResult.lhr.categories.performance.score) {
-    throw new Error("No performance score found");
-  }
-
-  console.log(
-    "Performance score was",
-    runnerResult.lhr.categories.performance.score * 100
-  );
-
-  await chrome.kill();
+    return -1;
 }
