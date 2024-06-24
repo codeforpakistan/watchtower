@@ -2,12 +2,12 @@
 
 ## Project Overview
 
-Watchtower is a project aimed at continuously analyzing the quality and performance of government websites using Google's Lighthouse tool. The goal is to compile a report that provides an ongoing assessment of these websites, highlighting how they evolve and improve over time. By doing this, we aim to foster better digital governance and transparency.
+Watchtower is a project aimed at continuously analyzing the quality and performance of government websites using Google's Page Speed insights API tool. The goal is to compile a report that provides an ongoing assessment of these websites, highlighting how they evolve and improve over time. By doing this, we aim to foster better digital governance and transparency.
 
 ## Features
 
 Crawl a predefined list of government websites.
-Utilize Lighthouse to analyze the front pages of these websites.
+Utilize Google Page Speed insights API to analyze the front pages of these websites.
 Generate reports with performance scores.
 Store and compare historical data to track changes and improvements.
 Publish an annual analysis on the state of digital governance.
@@ -15,7 +15,7 @@ Publish an annual analysis on the state of digital governance.
 ## Technology Stack
 
 - Bun: For backend operations.
-- Google Lighthouse: To perform website analyses.
+- Google Page Speed insights API: To perform website analyses.
 - Google Sheets API: To store and manage the data.
 
 ## Getting Started
@@ -34,9 +34,6 @@ function getRuntimeFunctionName(fn) {
   return fn.name;
 }
 ```
-
-Bun seems to elide function names expected by Lighthouse, which causes the crawler to crash. This current implementation uses the function's name property to get the function name, which fixes the issue.
-
 - Run the crawler: `bun run index.ts --help`
 
 
